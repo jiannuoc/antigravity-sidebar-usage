@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Antigravity 左侧栏实时用量卡片 · 本地预览</title>
+<style>
+  :root {
+    --foreground: #cccccc;
+    --primary: #007acc;
+    --primary-foreground: #ffffff;
+    --error: #de5555;
+    --warning: #e8975f;
+    --success: #7aae66;
+    --secondary: #272727;
+    --secondary-foreground: #9d9d9d;
+    --muted: #151515;
+    --muted-foreground: #6e6e6e;
+    --border: #242424;
+    --card: #191919;
+    --card-border: #222222;
+    --sidebar: #151515;
+    --sidebar-secondary: #1b1b1b;
+    --sidebar-muted: #151515;
+  }
+
+  body.light {
+    --foreground: #1f2328;
+    --primary: #0969da;
+    --error: #cf222e;
+    --warning: #bc4c00;
+    --success: #1a7f37;
+    --secondary: #eaeef2;
+    --secondary-foreground: #57606a;
+    --muted: #f6f8fa;
+    --muted-foreground: #656d76;
+    --border: #d8dee4;
+    --card: #ffffff;
+    --card-border: #d8dee4;
+    --sidebar: #f3f4f6;
+    --sidebar-secondary: #ffffff;
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    height: 100%;
+    font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+    background: var(--muted);
+    color: var(--foreground);
+  }
+
+  .app {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+  }
+
+  .sidebar {
+    width: 268px;
+    flex: none;
+    background: var(--sidebar);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 8px;
+  }
+
+  .sidebar-top {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted-foreground);
+  }
+
+  .nav-group {
+    padding: 0 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .sidebar-btn {
+    appearance: none;
+    border: none;
+    background: transparent;
+    color: var(--foreground);
+    font: inherit;
+    font-size: 13px;
+    height: 32px;
+    padding: 0 10px;
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+  }
+
+  .sidebar-btn:hover {
+    background: color-mix(in srgb, var(--foreground) 7%, transparent);
+  }
+
+  .sidebar-scroll {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 12px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .section-title {
+    font-size: 11px;
+    color: var(--muted-foreground);
+    padding: 4px 10px;
+    font-weight: 600;
+  }
+
+  .divider {
+    margin: 0 8px;
+    height: 1px;
+    background: rgba(128, 128, 128, 0.15);
+    flex: none;
+  }
+
+  .sidebar-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    padding: 8px 8px 0;
+  }
+
+  .main {
+    flex: 1;
+    padding: 28px 36px;
+    overflow-y: auto;
+  }
+
+  .panel {
+    max-width: 680px;
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 20px 22px;
+  }
+
+  .panel h1 {
+    margin: 0 0 8px;
+    font-size: 18px;
+  }
+
+  .panel p {
+    margin: 0 0 16px;
+    font-size: 13px;
+    color: var(--muted-foreground);
+    line-height: 1.6;
+  }
+
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .ctrl-btn {
+    border: 1px solid var(--card-border);
+    background: var(--sidebar-secondary);
+    color: var(--foreground);
+    border-radius: 7px;
+    padding: 7px 12px;
+    font-size: 12.5px;
+    cursor: pointer;
+  }
+  .ctrl-btn:hover {
+    border-color: var(--primary);
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div role="navigation" aria-label="Sidebar" class="sidebar">
+    <div class="sidebar-top">Antigravity 2.0 预览</div>
+    <div class="nav-group">
+      <button class="sidebar-btn" type="button" onclick="switchConv('a935b59f-2ed7-4dba-9330-438aae124623', 'gemini')">＋ 新会话</button>
+      <button class="sidebar-btn" type="button">⏱ 定时任务</button>
+      <button class="sidebar-btn" type="button">🧩 自定义设置</button>
+    </div>
+    <div class="sidebar-scroll">
+      <div class="section-title">最近对话</div>
+      <button class="sidebar-btn" type="button" onclick="switchConv('a935b59f-2ed7-4dba-9330-438aae124623', 'gemini')">开发 Antigravity 用量插件 (Gemini)</button>
+      <button class="sidebar-btn" type="button" onclick="switchConv('608d1faa-5030-4175-a6b2-9db7ef684cdb', 'claude')">大型代码库重构分析 (Claude)</button>
+      <button class="sidebar-btn" type="button" onclick="switchConv('', 'gemini')">回到首页（无打开对话）</button>
+    </div>
+    <div class="divider"></div>
+    <div class="sidebar-footer">
+      <!-- 实时用量卡片会自动挂载到下方“设置”按钮上方 -->
+      <button class="sidebar-btn" type="button" data-testid="settings-button">⚙ 设置</button>
+      <button class="sidebar-btn" type="button">⌨ 键盘快捷键</button>
+    </div>
+  </div>
+
+  <main class="main">
+    <div class="panel">
+      <h1>左侧栏实时用量卡片 · 交互预览</h1>
+      <p>左侧栏「设置」按钮上方即为真实运行的 <code>src/sidebar-usage-widget.js</code>，常驻同时显示最近发生变化的模型的周额度、5小时额度、当前上下文，以及类 DeepSeek Harness 的实时生成速度、10 柱微型波形与 TTFT 延迟；点击展开可查看全部模型配额、上下文构成和缓存命中率/输出明细。</p>
+      <div class="controls">
+        <button class="ctrl-btn" type="button" onclick="consumeModel('gemini')">消耗 Gemini 额度 (-5%)</button>
+        <button class="ctrl-btn" type="button" onclick="consumeModel('claude')">消耗 Claude 额度 (-5%)</button>
+        <button class="ctrl-btn" type="button" onclick="simulateLiveStream()">⚡ 模拟流式生成 (Live tok/s)</button>
+        <button class="ctrl-btn" type="button" onclick="switchConv('608d1faa-5030-4175-a6b2-9db7ef684cdb', 'claude')">切换至 Claude 会话（不扣额度）</button>
+        <button class="ctrl-btn" type="button" onclick="switchConv('a935b59f-2ed7-4dba-9330-438aae124623', 'gemini')">切换至 Gemini 会话（不扣额度）</button>
+        <button class="ctrl-btn" type="button" onclick="switchConv('', 'gemini')">切换至首页</button>
+        <button class="ctrl-btn" type="button" onclick="resetMockQuotas()">重置全部模拟额度</button>
+        <button class="ctrl-btn" type="button" onclick="toggleTheme()">切换深色 / 浅色主题</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+  window.__AGY_USAGE_PREVIEW__ = true;
+  let activeModelType = 'gemini';
+  let activeConv = 'a935b59f-2ed7-4dba-9330-438aae124623';
+  const mockQuotas = {
+    gemini5h: 0.82,
+    geminiWeekly: 0.96,
+    claude5h: 0.91,
+    claudeWeekly: 0.64,
+  };
+
+  function updateMockUrl() {
+    const target = activeConv ? ('?cascadeId=' + activeConv) : '?';
+    try {
+      history.replaceState({}, '', location.pathname + target);
+    } catch {}
+  }
+  updateMockUrl();
+
+  window.__AGY_MOCK_RPC__ = async (method, body) => {
+    const now = Date.now();
+
+    if (method === 'RetrieveUserQuotaSummary') {
+      return {
+        groups: [
+          {
+            displayName: 'Gemini models',
+            buckets: [
+              {
+                bucketId: 'gemini-5h',
+                window: '5h',
+                remainingFraction: mockQuotas.gemini5h,
+                resetTime: new Date(now + (2 * 60 + 42) * 60000).toISOString(),
+              },
+              {
+                bucketId: 'gemini-weekly',
+                window: 'weekly',
+                remainingFraction: mockQuotas.geminiWeekly,
+                resetTime: new Date(now + (4 * 24 + 6) * 3600000).toISOString(),
+              },
+            ],
+          },
+          {
+            displayName: 'Claude models',
+            buckets: [
+              {
+                bucketId: 'claude-5h',
+                window: '5h',
+                remainingFraction: mockQuotas.claude5h,
+                resetTime: new Date(now + 4 * 3600000).toISOString(),
+              },
+              {
+                bucketId: 'claude-weekly',
+                window: 'weekly',
+                remainingFraction: mockQuotas.claudeWeekly,
+                resetTime: new Date(now + (5 * 24 + 2) * 3600000).toISOString(),
+              },
+            ],
+          },
+        ],
+      };
+    }
+
+    if (method === 'GetUserStatus') {
+      return {
+        userStatus: {
+          userTier: {
+            id: 'g1-pro-tier',
+            name: 'Google AI Pro',
+            availableCredits: 420,
+          },
+        },
+      };
+    }
+
+    if (method === 'GetAvailableModels') {
+      return {
+        models: {
+          'gemini-3.8-pro-high': { maxTokens: 1048576, displayName: 'Gemini 3.8 Pro' },
+          'claude-sonnet-4-6': { maxTokens: 250000, displayName: 'Claude 4.6 Sonnet' },
+        },
+      };
+    }
+
+    if (method === 'GetCascadeTrajectoryGeneratorMetadata') {
+      const isClaude = body.cascadeId === '608d1faa-5030-4175-a6b2-9db7ef684cdb' || activeModelType === 'claude';
+      const historyBase = [
+        { out: 240, think: 70, resp: 170, ttft: '1.92s', dur: '3.10s' },
+        { out: 410, think: 140, resp: 270, ttft: '1.45s', dur: '3.85s' },
+        { out: 195, think: 50, resp: 145, ttft: '2.15s', dur: '2.40s' },
+        { out: 520, think: 190, resp: 330, ttft: '1.60s', dur: '4.12s' },
+        { out: 360, think: 110, resp: 250, ttft: '1.38s', dur: '2.65s' },
+      ].concat(window.__mockExtraTurns || []);
+      const allMeta = historyBase.map((t, idx) => ({
+        plannerConfig: {
+          modelName: isClaude ? 'claude-sonnet-4-6' : 'gemini-3.8-pro-high',
+        },
+        chatModel: {
+          modelDisplayName: isClaude ? 'Claude 4.6 Sonnet' : 'Gemini 3.8 Pro',
+          timeToFirstToken: t.ttft,
+          streamingDuration: t.dur,
+          usage: {
+            inputTokens: 2049,
+            outputTokens: t.out,
+            thinkingOutputTokens: t.think,
+            responseOutputTokens: t.resp,
+            cacheReadTokens: isClaude ? 186200 : 124600,
+            cacheWriteTokens: 24,
+          },
+          chatStartMetadata: idx === historyBase.length - 1 ? {
+            contextWindowMetadata: {
+              maxContextTokens: 256000,
+              tokenBreakdown: {
+                totalTokens: (isClaude ? 190400 : 128400) + idx * 300,
+                groups: [
+                  { type: 'SYSTEM_PROMPT', numTokens: 14200, children: [{ name: 'skills', numTokens: 3200 }] },
+                  { type: 'TOOLS', numTokens: 11800 },
+                  { type: 'MCP_TOOLS', numTokens: 6400 },
+                  { type: 'RULES', numTokens: 2800 },
+                  {
+                    type: 'CHAT_MESSAGES',
+                    numTokens: (isClaude ? 155200 : 93200) + idx * 300,
+                    children: [
+                      { name: '1: USER_INPUT', numTokens: isClaude ? 28000 : 14200 },
+                      { name: '2: PLANNER_RESPONSE', numTokens: isClaude ? 54200 : 31000 },
+                      { name: '3: VIEW_FILE', numTokens: isClaude ? 73000 : 48000 },
+                    ],
+                  },
+                ],
+              },
+            },
+          } : undefined,
+        },
+      }));
+      const offset = Number(body.generatorMetadataOffset) || 0;
+      return {
+        generatorMetadata: allMeta.slice(offset),
+      };
+    }
+
+    return {};
+  };
+
+  function toggleTheme() {
+    document.body.classList.toggle('light');
+  }
+
+  let liveDemoTimers = [];
+  function simulateLiveStream() {
+    for (const t of liveDemoTimers) clearTimeout(t);
+    liveDemoTimers = [];
+    const ctrl = window.__agySidebarUsageStreamControl;
+    if (!ctrl) return;
+    ctrl.startPrefill();
+    const chunks = [18, 28, 34, 42, 36, 48, 39, 44, 30, 26];
+    let delay = 550;
+    chunks.forEach((tok, idx) => {
+      liveDemoTimers.push(setTimeout(() => {
+        ctrl.pushChunk(tok, 250);
+      }, delay + idx * 240));
+    });
+    liveDemoTimers.push(setTimeout(() => {
+      window.__mockExtraTurns = (window.__mockExtraTurns || []).concat([
+        { out: 615, think: 220, resp: 395, ttft: '0.62s', dur: '3.65s' },
+      ]);
+      ctrl.finish(true);
+    }, delay + chunks.length * 240 + 250));
+  }
+
+  function consumeModel(family) {
+    if (family === 'claude') {
+      mockQuotas.claude5h = Math.max(0, Number((mockQuotas.claude5h - 0.05).toFixed(2)));
+      mockQuotas.claudeWeekly = Math.max(0, Number((mockQuotas.claudeWeekly - 0.02).toFixed(2)));
+    } else {
+      mockQuotas.gemini5h = Math.max(0, Number((mockQuotas.gemini5h - 0.05).toFixed(2)));
+      mockQuotas.geminiWeekly = Math.max(0, Number((mockQuotas.geminiWeekly - 0.02).toFixed(2)));
+    }
+    window.__agySidebarUsageRefresh && window.__agySidebarUsageRefresh(true);
+  }
+
+  function resetMockQuotas() {
+    mockQuotas.gemini5h = 0.82;
+    mockQuotas.geminiWeekly = 0.96;
+    mockQuotas.claude5h = 0.91;
+    mockQuotas.claudeWeekly = 0.64;
+    try {
+      window.localStorage && window.localStorage.removeItem('agy_sidebar_usage_quota_tracker_v1');
+    } catch {}
+    window.__agySidebarUsageRefresh && window.__agySidebarUsageRefresh(true);
+  }
+
+  function switchConv(id, modelType) {
+    activeConv = id;
+    if (modelType) activeModelType = modelType;
+    updateMockUrl();
+    window.__agySidebarUsageRefresh && window.__agySidebarUsageRefresh(true);
+  }
+</script>
+<script src="./src/sidebar-usage-widget.js"></script>
+</body>
+</html>
